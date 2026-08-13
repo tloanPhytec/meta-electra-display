@@ -1,0 +1,64 @@
+From ed9c9eec1be0207f63f04420e1e526a01901d3f4 Mon Sep 17 00:00:00 2001
+From: tloan <tloan@phytec.com>
+Date: Thu, 13 Aug 2026 18:18:16 +0000
+Subject: [PATCH] electra: enable SPI1, increase buffer limit for spidev
+
+Signed-off-by: tloan <tloan@phytec.com>
+---
+ .../dts/ti/k3-am642-phyboard-electra-rdk.dts  | 22 +++++++++++++++++++
+ drivers/spi/spidev.c                          |  2 +-
+ 2 files changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/ti/k3-am642-phyboard-electra-rdk.dts b/arch/arm64/boot/dts/ti/k3-am642-phyboard-electra-rdk.dts
+index 0a10b1aab9c3..e5b253d8e4ef 100644
+--- a/arch/arm64/boot/dts/ti/k3-am642-phyboard-electra-rdk.dts
++++ b/arch/arm64/boot/dts/ti/k3-am642-phyboard-electra-rdk.dts
+@@ -315,6 +315,15 @@ AM64X_IOPAD(0x003c, PIN_OUTPUT, 7)	/* (T20) GPMC0_AD0.GPIO0_15 */
+ 			AM64X_IOPAD(0x0040, PIN_OUTPUT, 7)	/* (U21) GPMC0_AD1.GPIO0_16 */
+ 		>;
+ 	};
++
++	main_spi1_pins_default: main-spi1-pins-default {
++		pinctrl-single,pins = <
++			AM64X_IOPAD(0x0224, PIN_INPUT, 0)       /* (C14) SPI1_CLK */
++			AM64X_IOPAD(0x021C, PIN_OUTPUT, 0)      /* (B14) SPI1_CS0 */
++			AM64X_IOPAD(0x0228, PIN_OUTPUT, 0)      /* (B15) SPI1_D0 */
++			AM64X_IOPAD(0x022C, PIN_INPUT, 0)       /* (A15) SPI1_D1 */
++		>;
++	};
+ };
+ 
+ &icssg0_mdio {
+@@ -460,3 +469,16 @@ &usb0 {
+ 	phys = <&serdes0_pcie_usb_link>;
+ 	phy-names = "cdns3,usb3-phy";
+ };
++
++&main_spi1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&main_spi1_pins_default>;
++	ti,pindir-d0-out-d1-in;
++	status = "okay";
++
++	spidev@0 {
++		compatible = "rohm,bh2228fv";
++		reg = <0>;
++		spi-max-frequency = <30000000>;
++	};
++};
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 661b84f3ee62..a6ec2dc723ab 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -83,7 +83,7 @@ struct spidev_data {
+ static LIST_HEAD(device_list);
+ static DEFINE_MUTEX(device_list_lock);
+ 
+-static unsigned bufsiz = 4096;
++static unsigned bufsiz = 65536;
+ module_param(bufsiz, uint, S_IRUGO);
+ MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
+ 
+-- 
+2.34.1
+
