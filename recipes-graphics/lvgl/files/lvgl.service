@@ -1,0 +1,15 @@
+[Unit]
+Description=LVGL Demo Service
+After=basic.target
+
+[Service]
+User=root
+Type=simple
+ExecStart=/usr/bin/lvgl
+ExecStop=/usr/bin/kill $MAINPID
+RemainAfterExit=no
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
