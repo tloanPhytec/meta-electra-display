@@ -1,5 +1,8 @@
 # Meta-Electra-Display
 
+<img width="426" height="240" alt="EVE-Electra" src="https://github.com/user-attachments/assets/f425c25d-ad86-487e-b399-5fbb2acd35b2" />
+
+
 This Yocto Meta Layer serves to provide a Touch Display solution for the phyCORE-AM64x Development Kit, which is traditionally used in headless applications due to it's lack of graphics accelerators and dedicated display interfaces.
 
 ## Requirements
@@ -44,3 +47,26 @@ Rebuild your target's image with bitbake:
 ```sh
 MACHINE=phyboard-electra-am64xx-2 DISTRO=ampliphy bitbake phytec-lvgl-image
 ```
+
+## Hardware Connections
+
+The following signal connections were used to verify this reference (omitted pins can remain unconnected).
+
+> [!NOTE]
+> It is best practice to fully power-off your development kit before connecting external hardware. This can help avoid unintended damage.
+
+<img width="10732" height="2778" alt="Electra-EVE-hookup-guide" src="https://github.com/user-attachments/assets/1aceaf08-00bd-4107-8fdf-2778a2fdb436" />
+
+| Connect | phyBOARD-Electra | CFA10098 Breakout Board |
+| -------- | -------- | -------- |
+|| X27 pin 1 | +3.3v pin |
+|| X27 pin 4 | GND pin |
+|| X27 pin 26 | SCK pin |
+|| X27 pin 28 | MOSI pin |
+|| X27 pin 30 | MISO pin |
+|| X27 pin 32 | CS pin |
+|| X28 pin 1 | PD pin |
+
+## Runtime Instructions
+
+With the EVE Display connected as shown, all you must do is enable this meta layer, rebuild your development kit's software image (using the new `phytec-lvgl-image` build target) and use it to boot the hardware. The reference layer incorporates a systemd service that will auto-start the LVGL application on boot.
